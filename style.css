@@ -1,0 +1,1015 @@
+:root {
+  --pink: #ff4fd8;
+  --cyan: #59edff;
+  --gold: #ffe18a;
+  --background: #03020b;
+  --glass: rgba(255,255,255,.07);
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  overflow: hidden;
+
+  background: var(--background);
+
+  color: white;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  touch-action: none;
+}
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+canvas {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+}
+
+#space {
+  z-index: 0;
+}
+
+#fx {
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   VIGNETTE
+   ========================================================= */
+
+.vignette {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 3;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      transparent 0%,
+      rgba(0,0,0,.15) 55%,
+      rgba(0,0,0,.85) 100%
+    );
+}
+
+
+/* =========================================================
+   ORIENTACIÓN
+   ========================================================= */
+
+#orientation {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 100;
+
+  display: grid;
+
+  place-items: center;
+
+  text-align: center;
+
+  padding: 30px;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      #1c0a32,
+      #020107 70%
+    );
+}
+
+#orientation.hidden {
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition: opacity .7s ease;
+}
+
+
+.orientation-content {
+  max-width: 500px;
+}
+
+
+/* =========================================================
+   TELÉFONO ANIMADO
+   ========================================================= */
+
+.phone-icon {
+
+  width: 75px;
+
+  height: 135px;
+
+  border:
+    2px solid
+    rgba(255,255,255,.9);
+
+  border-radius: 16px;
+
+  margin: auto;
+
+  position: relative;
+
+  animation:
+    rotatePhone 2.5s
+    ease-in-out
+    infinite;
+
+  box-shadow:
+    0 0 35px
+    rgba(255,70,220,.3);
+}
+
+
+.phone-icon::after {
+
+  content: "";
+
+  position: absolute;
+
+  width: 23px;
+
+  height: 3px;
+
+  border-radius: 5px;
+
+  background: white;
+
+  bottom: 8px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  opacity: .5;
+}
+
+
+@keyframes rotatePhone {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  45%,
+  75% {
+    transform: rotate(90deg);
+  }
+}
+
+
+.orientation-content h1 {
+
+  margin:
+    25px
+    0
+    10px;
+
+  font-size:
+    clamp(
+      2rem,
+      7vw,
+      3.5rem
+    );
+}
+
+
+.orientation-content p {
+
+  color: #bdb0ca;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   BOTÓN DE ENTRADA
+   ========================================================= */
+
+#startGate {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 30px;
+}
+
+
+#startGate span {
+
+  color: #a99bb4;
+
+  font-size: .75rem;
+}
+
+
+.fullscreen-button {
+
+  width: 75px;
+
+  height: 75px;
+
+  border-radius: 50%;
+
+  font-size: 1.7rem;
+
+  border:
+    1px solid
+    rgba(255,255,255,.4);
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.08);
+
+  box-shadow:
+    0 0 45px
+    rgba(255,70,220,.3);
+
+  animation:
+    pulseButton
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes pulseButton {
+
+  50% {
+
+    transform: scale(1.08);
+
+    box-shadow:
+      0 0 75px
+      rgba(80,220,255,.35);
+  }
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+#app {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 5;
+
+  display: grid;
+
+  place-items: center;
+
+  padding:
+    max(18px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+}
+
+
+/* =========================================================
+   TARJETA
+   ========================================================= */
+
+#card {
+
+  width: min(920px, 94vw);
+
+  height: min(690px, 88vh);
+
+  min-height: 420px;
+
+  position: relative;
+
+  display: grid;
+
+  place-items: center;
+
+  text-align: center;
+
+  border:
+    1px solid
+    rgba(255,255,255,.14);
+
+  border-radius:
+    clamp(
+      22px,
+      4vw,
+      36px
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.075),
+      rgba(255,255,255,.018)
+    );
+
+  box-shadow:
+
+    0 0 100px
+    rgba(255,0,210,.13),
+
+    inset
+    0 1px
+    rgba(255,255,255,.12);
+
+  backdrop-filter:
+    blur(13px);
+
+  transform-style: preserve-3d;
+
+  transition:
+    transform .12s ease-out;
+
+  overflow: hidden;
+}
+
+
+#card::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: -2px;
+
+  border-radius: inherit;
+
+  padding: 2px;
+
+  background:
+    conic-gradient(
+      from var(--angle),
+      transparent,
+      #ff49d7,
+      transparent 28%,
+      #4beaff,
+      transparent 52%,
+      #ff49d7,
+      transparent 76%
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0)
+    content-box,
+
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite: xor;
+
+  mask-composite: exclude;
+
+  animation:
+    borderSpin
+    8s linear
+    infinite;
+
+  opacity: .7;
+}
+
+
+@property --angle {
+
+  syntax: "<angle>";
+
+  initial-value: 0deg;
+
+  inherits: false;
+}
+
+
+@keyframes borderSpin {
+
+  to {
+    --angle: 360deg;
+  }
+}
+
+
+.card-content {
+
+  position: relative;
+
+  z-index: 2;
+
+  padding: 28px;
+
+  max-width: 850px;
+
+  transform:
+    translateZ(50px);
+}
+
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.eyebrow {
+
+  font-size: .72rem;
+
+  letter-spacing: .42em;
+
+  text-transform: uppercase;
+
+  color: #b9abc8;
+
+  margin-bottom: 18px;
+}
+
+
+#card h2 {
+
+  margin: 0;
+
+  font-size:
+    clamp(
+      4rem,
+      12vw,
+      9rem
+    );
+
+  line-height: .78;
+
+  letter-spacing: -.08em;
+
+  background:
+    linear-gradient(
+      100deg,
+      #fff,
+      #ffb8ef 30%,
+      #ff42d5 52%,
+      #72f3ff 78%,
+      #fff
+    );
+
+  color: transparent;
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+
+  filter:
+    drop-shadow(
+      0 0 28px
+      rgba(255,40,215,.35)
+    );
+
+  animation:
+    breathe 4s ease-in-out infinite;
+}
+
+
+@keyframes breathe {
+
+  50% {
+
+    filter:
+      drop-shadow(
+        0 0 48px
+        rgba(255,40,215,.68)
+      );
+  }
+}
+
+
+.subtitle {
+
+  font-size:
+    clamp(
+      .98rem,
+      2.3vw,
+      1.3rem
+    );
+
+  line-height: 1.65;
+
+  color: #e9deef;
+
+  max-width: 650px;
+
+  margin:
+    28px
+    auto
+    30px;
+}
+
+
+/* =========================================================
+   BOTONES
+   ========================================================= */
+
+.buttons {
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+}
+
+
+button {
+
+  border:
+    1px solid
+    rgba(255,255,255,.2);
+
+  color: white;
+
+  background:
+    rgba(255,255,255,.08);
+
+  border-radius: 999px;
+
+  padding:
+    14px
+    20px;
+
+  font-size: .95rem;
+
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition: .2s;
+
+  backdrop-filter: blur(8px);
+}
+
+
+button:hover,
+button:active {
+
+  transform:
+    translateY(-2px)
+    scale(1.025);
+
+  background:
+    rgba(255,255,255,.15);
+
+  box-shadow:
+    0 0 30px
+    rgba(255,55,215,.2);
+}
+
+
+.primary-button {
+
+  background:
+    linear-gradient(
+      100deg,
+      rgba(255,45,210,.28),
+      rgba(65,220,255,.18)
+    );
+
+  border-color:
+    rgba(255,255,255,.3);
+}
+
+
+/* =========================================================
+   CONTROLES
+   ========================================================= */
+
+#controls {
+
+  position: fixed;
+
+  z-index: 7;
+
+  right:
+    max(
+      12px,
+      env(safe-area-inset-right)
+    );
+
+  top:
+    max(
+      12px,
+      env(safe-area-inset-top)
+    );
+
+  display: flex;
+
+  gap: 8px;
+}
+
+
+.control-button {
+
+  width: 44px;
+
+  height: 44px;
+
+  padding: 0;
+
+  display: grid;
+
+  place-items: center;
+}
+
+
+/* =========================================================
+   MODALES
+   ========================================================= */
+
+.modal {
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 20;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 25px;
+
+  background:
+    rgba(2,0,8,.68);
+
+  backdrop-filter:
+    blur(15px);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition: .55s;
+}
+
+
+.modal.show {
+
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+
+.panel {
+
+  width:
+    min(
+      720px,
+      92vw
+    );
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding:
+    clamp(
+      28px,
+      6vw,
+      60px
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.16);
+
+  border-radius: 30px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(27,7,44,.95),
+      rgba(3,14,30,.95)
+    );
+
+  box-shadow:
+    0 0 110px
+    rgba(255,0,210,.2);
+}
+
+
+.big-emoji {
+
+  font-size:
+    clamp(
+      2rem,
+      8vw,
+      4rem
+    );
+}
+
+
+.panel h2 {
+
+  font-size:
+    clamp(
+      2.1rem,
+      7vw,
+      5rem
+    );
+
+  line-height: .95;
+
+  margin:
+    18px
+    0;
+
+  background:
+    linear-gradient(
+      90deg,
+      #fff,
+      #ff73df,
+      #71f4ff
+    );
+
+  color: transparent;
+
+  background-clip: text;
+
+  -webkit-background-clip: text;
+}
+
+
+/* =========================================================
+   POEMA
+   ========================================================= */
+
+.poem {
+
+  font-family: Georgia, serif;
+
+  font-size:
+    clamp(
+      1rem,
+      3vw,
+      1.3rem
+    );
+
+  line-height: 2;
+
+  color: #e9deef;
+
+  min-height: 220px;
+
+  white-space: pre-line;
+}
+
+
+.cursor {
+
+  display: inline-block;
+
+  width: 2px;
+
+  height: 1.1em;
+
+  background: white;
+
+  vertical-align: -.15em;
+
+  animation:
+    blink .8s infinite;
+}
+
+
+@keyframes blink {
+
+  50% {
+    opacity: 0;
+  }
+}
+
+
+/* =========================================================
+   CÁMARA
+   ========================================================= */
+
+.camera-panel {
+
+  max-width: 700px;
+}
+
+
+.camera-panel p {
+
+  color: #cfc2d7;
+
+  line-height: 1.6;
+}
+
+
+#cameraVideo {
+
+  width:
+    min(
+      560px,
+      100%
+    );
+
+  aspect-ratio: 4 / 3;
+
+  object-fit: cover;
+
+  border-radius: 22px;
+
+  margin:
+    15px
+    auto
+    22px;
+
+  background: black;
+
+  display: none;
+
+  transform:
+    scaleX(-1);
+
+  border:
+    1px solid
+    rgba(255,255,255,.15);
+}
+
+
+#downloadPhoto {
+
+  display: none;
+
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) and (orientation: landscape) {
+
+  #card {
+
+    width: 92vw;
+
+    height: 84vh;
+  }
+
+  .card-content {
+
+    padding: 15px;
+  }
+
+  .eyebrow {
+
+    margin-bottom: 9px;
+  }
+
+  #card h2 {
+
+    font-size:
+      clamp(
+        3.2rem,
+        14vh,
+        6rem
+      );
+  }
+
+  .subtitle {
+
+    margin:
+      14px
+      auto;
+
+    font-size:
+      clamp(
+        .78rem,
+        2.3vh,
+        1rem
+      );
+  }
+}
+
+
+@media (max-width: 520px) {
+
+  #card {
+
+    height: 82vh;
+
+    width: 92vw;
+  }
+
+  .card-content {
+
+    padding:
+      22px
+      16px;
+  }
+
+  .eyebrow {
+
+    letter-spacing: .22em;
+
+    font-size: .62rem;
+  }
+
+  #card h2 {
+
+    font-size:
+      clamp(
+        3.7rem,
+        19vw,
+        6rem
+      );
+  }
+
+  .subtitle {
+
+    font-size: .95rem;
+
+    margin:
+      24px
+      auto;
+  }
+
+  .buttons {
+
+    gap: 8px;
+  }
+
+  button {
+
+    padding:
+      12px
+      16px;
+
+    font-size: .86rem;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration: .01ms !important;
+
+    transition-duration: .01ms !important;
+  }
+}

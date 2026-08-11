@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,
+             viewport-fit=cover,user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#03020b">
+
+  <title>✨ Un universo para ti</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- UNIVERSO -->
+  <canvas id="space"></canvas>
+  <canvas id="fx"></canvas>
+
+  <div class="vignette"></div>
+
+  <!-- =====================================================
+       PANTALLA INICIAL / ORIENTACIÓN
+       ===================================================== -->
+
+  <section id="orientation">
+
+    <div class="orientation-content">
+
+      <div class="phone-icon">
+        <div class="phone-speaker"></div>
+      </div>
+
+      <h1>Gira el teléfono</h1>
+
+      <p>
+        Esta experiencia fue creada para verse
+        en horizontal.
+      </p>
+
+      <!-- Este botón aparece cuando el teléfono está horizontal -->
+
+      <div id="startGate">
+
+        <button
+          id="startExperience"
+          class="fullscreen-button"
+          aria-label="Entrar en pantalla completa"
+        >
+          ⛶
+        </button>
+
+        <strong>Presiona para entrar</strong>
+
+        <span>
+          Pantalla completa + música
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTROLES
+       ===================================================== -->
+
+  <div id="controls">
+
+    <button
+      id="musicButton"
+      class="control-button"
+      aria-label="Música"
+    >
+      ♫
+    </button>
+
+    <button
+      id="fullscreenButton"
+      class="control-button"
+      aria-label="Pantalla completa"
+    >
+      ⛶
+    </button>
+
+  </div>
+
+
+  <!-- =====================================================
+       TARJETA PRINCIPAL
+       ===================================================== -->
+
+  <main id="app">
+
+    <section id="card">
+
+      <div class="card-content">
+
+        <div class="eyebrow">
+          UN PEQUEÑO UNIVERSO FUE PREPARADO PARA TI
+        </div>
+
+        <h2>
+          FELIZ<br>
+          CUMPLE
+        </h2>
+
+        <p class="subtitle">
+
+          Hoy el universo tiene una excusa
+          para brillar un poco más.
+
+          <br><br>
+
+          <strong>
+            Que lo que viene sea más increíble
+            que todo lo que imaginaste.
+          </strong>
+
+        </p>
+
+        <div class="buttons">
+
+          <button
+            id="surpriseButton"
+            class="primary-button"
+          >
+            ✦ Abrir la sorpresa
+          </button>
+
+          <button
+            id="poemButton"
+          >
+            ♡ Leer algo
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       POEMA
+       ===================================================== -->
+
+  <section id="poemModal" class="modal">
+
+    <div class="panel">
+
+      <div class="big-emoji">
+        🌙 ✨
+      </div>
+
+      <h2>
+        Para tu nuevo año
+      </h2>
+
+      <div class="poem">
+
+        <span id="typedText"></span>
+
+        <span class="cursor"></span>
+
+      </div>
+
+      <button
+        id="saveMomentButton"
+        class="primary-button"
+      >
+        📸 Guardar este momento
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CÁMARA
+       ===================================================== -->
+
+  <section id="cameraModal" class="modal">
+
+    <div class="panel camera-panel">
+
+      <div class="big-emoji">
+        📸 ✨
+      </div>
+
+      <h2>
+        Guardar este momento
+      </h2>
+
+      <p id="cameraMessage">
+
+        Permite el acceso a tu cámara
+        para crear un recuerdo.
+
+        <br><br>
+
+        <small>
+          La fotografía se procesa
+          completamente en tu dispositivo.
+        </small>
+
+      </p>
+
+      <video
+        id="cameraVideo"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <div class="buttons">
+
+        <button
+          id="takePhotoButton"
+          class="primary-button"
+        >
+          📸 Tomar foto
+        </button>
+
+        <button id="closeCameraButton">
+          Ahora no
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       RESULTADO FINAL
+       ===================================================== -->
+
+  <section id="finalModal" class="modal">
+
+    <div class="panel">
+
+      <div class="big-emoji">
+        🎂 ✨ 🌌
+      </div>
+
+      <h2>
+        Tu nuevo año empieza ahora.
+      </h2>
+
+      <p class="poem">
+
+        No te deseo un día perfecto.
+
+        <br><br>
+
+        Te deseo
+        <strong>
+          mil momentos que valga la pena recordar.
+        </strong>
+
+        <br><br>
+
+        Que nunca te falten motivos para reír,
+        personas con quienes compartirlos
+        y sueños suficientemente grandes
+        como para perderte un poquito
+        en ellos.
+
+      </p>
+
+      <button
+        id="closeFinalButton"
+        class="primary-button"
+      >
+        Volver al universo
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       JS
+       ===================================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
