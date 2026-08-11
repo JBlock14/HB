@@ -1,159 +1,5 @@
-const space =
-  document.getElementById("space");
-
-const fx =
-  document.getElementById("fx");
-
-const s =
-  space.getContext("2d");
-
-const f =
-  fx.getContext("2d");
-
-
-let W = innerWidth;
-let H = innerHeight;
-
-let D =
-  Math.min(
-    devicePixelRatio || 1,
-    2
-  );
-
-
-let stars = [];
-let sparks = [];
-let rockets = [];
-
-let mouse = {
-  x: W / 2,
-  y: H / 2
-};
-
-let time = 0;
-let sparkCount = 0;
-
-
 /* =========================================================
-   UTILIDADES
-   ========================================================= */
-
-function random(min, max) {
-
-  return Math.random() *
-    (max - min) +
-    min;
-}
-
-
-/* =========================================================
-   RESIZE
-   ========================================================= */
-
-function resize() {
-
-  W = innerWidth;
-  H = innerHeight;
-
-  D =
-    Math.min(
-      devicePixelRatio || 1,
-      2
-    );
-
-  for (const canvas of [space, fx]) {
-
-    canvas.width = W * D;
-    canvas.height = H * D;
-
-    canvas.style.width =
-      W + "px";
-
-    canvas.style.height =
-      H + "px";
-  }
-
-  s.setTransform(
-    D, 0, 0, D, 0, 0
-  );
-
-  f.setTransform(
-    D, 0, 0, D, 0, 0
-  );
-
-
-  stars =
-    Array.from(
-      {
-        length:
-          Math.min(
-            700,
-            Math.max(
-              180,
-              Math.floor(
-                W * H / 1800
-              )
-            )
-          )
-      },
-      createStar
-    );
-
-
-  updateOrientation();
-}
-
-
-function createStar() {
-
-  return {
-
-    x: random(0, W),
-
-    y: random(0, H),
-
-    z: random(.15, 1),
-
-    radius:
-      random(.3, 1.8),
-
-    angle:
-      random(0, Math.PI * 2),
-
-    speed:
-      random(.002, .014),
-
-    hue:
-      Math.random() < .15
-        ? 190
-        : Math.random() < .12
-          ? 320
-          : 0
-  };
-}
-
-
-addEventListener(
-  "resize",
-  resize
-);
-
-
-addEventListener(
-  "orientationchange",
-  () => {
-
-    setTimeout(
-      resize,
-      200
-    );
-
-  }
-);
-
-
-/* =========================================================
-   ORIENTACIÓN
+   CONFIGURACIÓN
    ========================================================= */
 
 const orientation =
@@ -162,572 +8,372 @@ const orientation =
   );
 
 
-let experienceStarted =
+const experience =
+  document.getElementById(
+    "experience"
+  );
+
+
+const startButton =
+  document.getElementById(
+    "startExperience"
+  );
+
+
+const musicButton =
+  document.getElementById(
+    "musicButton"
+  );
+
+
+const momentButton =
+  document.getElementById(
+    "momentButton"
+  );
+
+
+const canvas =
+  document.getElementById(
+    "spaceCanvas"
+  );
+
+
+const ctx =
+  canvas.getContext(
+    "2d"
+  );
+
+
+const flash =
+  document.getElementById(
+    "cameraFlash"
+  );
+
+
+const saveMessage =
+  document.getElementById(
+    "saveMessage"
+  );
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+let started =
   false;
 
 
-function updateOrientation() {
-
-  if (experienceStarted)
-    return;
+let musicPlaying =
+  false;
 
 
-  const portrait =
-    window.matchMedia(
-      "(orientation: portrait)"
-    ).matches;
+let audioContext =
+  null;
 
 
-  orientation.style.display =
-    "grid";
+let masterGain =
+  null;
 
 
-  const title =
-    orientation.querySelector("h1");
+let musicNodes =
+  [];
 
-  const text =
-    orientation.querySelector("p");
 
-  const gate =
-    document.getElementById(
-      "startGate"
+let particles =
+  [];
+
+
+let stars =
+  [];
+
+
+let W =
+  0;
+
+
+let H =
+  0;
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+function resizeCanvas() {
+
+  const ratio =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
     );
 
 
-  if (portrait) {
+  W =
+    window.innerWidth;
 
-    title.textContent =
-      "Gira el teléfono";
 
-    text.textContent =
-      "Esta experiencia fue creada para verse en horizontal.";
+  H =
+    window.innerHeight;
 
-    gate.style.display =
-      "none";
+
+  canvas.width =
+    W * ratio;
+
+
+  canvas.height =
+    H * ratio;
+
+
+  canvas.style.width =
+    `${W}px`;
+
+
+  canvas.style.height =
+    `${H}px`;
+
+
+  ctx.setTransform(
+    ratio,
+    0,
+    0,
+    ratio,
+    0,
+    0
+  );
+
+
+  createStars();
+
+  createParticles();
+}
+
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+
+window.addEventListener(
+  "orientationchange",
+  () => {
+
+    setTimeout(
+      resizeCanvas,
+      250
+    );
 
   }
+);
 
-  else {
 
-    title.textContent =
-      "Todo listo";
+/* =========================================================
+   ESTRELLAS
+   ========================================================= */
 
-    text.textContent =
-      "Ahora puedes entrar al pequeño universo.";
+function createStars() {
 
-    gate.style.display =
-      "flex";
-  }
+  stars =
+    Array.from(
+      {
+        length:
+          Math.floor(
+            Math.max(
+              80,
+              W * H / 9000
+            )
+          )
+      },
+
+      () => ({
+
+        x:
+          Math.random() * W,
+
+        y:
+          Math.random() * H,
+
+        size:
+          Math.random() * 1.6 + .3,
+
+        alpha:
+          Math.random() * .7 + .2,
+
+        speed:
+          Math.random() * .5 + .1,
+
+        phase:
+          Math.random() *
+          Math.PI *
+          2
+      })
+    );
 }
 
 
 /* =========================================================
-   UNIVERSO
+   PARTÍCULAS
    ========================================================= */
 
-function drawStars() {
+function createParticles() {
 
-  s.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
+  particles =
+    Array.from(
+      {
+        length:
+          Math.floor(
+            Math.max(
+              35,
+              W / 25
+            )
+          )
+      },
 
+      () => ({
 
-  const background =
-    s.createRadialGradient(
-      W * .5,
-      H * .46,
-      0,
-      W * .5,
-      H * .46,
-      Math.max(W, H) * .72
+        x:
+          Math.random() * W,
+
+        y:
+          Math.random() * H,
+
+        vx:
+          (Math.random() - .5) * .15,
+
+        vy:
+          (Math.random() - .5) * .15,
+
+        radius:
+          Math.random() * 2 + .5,
+
+        life:
+          Math.random(),
+
+        hue:
+          Math.random() * 360
+      })
     );
-
-
-  background.addColorStop(
-    0,
-    "#16052c"
-  );
-
-  background.addColorStop(
-    .5,
-    "#08051a"
-  );
-
-  background.addColorStop(
-    1,
-    "#010106"
-  );
-
-
-  s.fillStyle =
-    background;
-
-  s.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  for (const star of stars) {
-
-    star.angle +=
-      star.speed;
-
-
-    const alpha =
-      .2 +
-      .6 *
-      (
-        .5 +
-        .5 *
-        Math.sin(
-          star.angle
-        )
-      );
-
-
-    const x =
-      star.x +
-      (
-        mouse.x - W / 2
-      ) *
-      star.z *
-      .015;
-
-
-    const y =
-      star.y +
-      (
-        mouse.y - H / 2
-      ) *
-      star.z *
-      .015;
-
-
-    s.beginPath();
-
-    s.arc(
-      x,
-      y,
-      star.radius *
-        (.7 + star.z),
-      0,
-      Math.PI * 2
-    );
-
-
-    s.fillStyle =
-      star.hue
-
-        ? `hsla(
-            ${star.hue},
-            100%,
-            82%,
-            ${alpha}
-          )`
-
-        : `rgba(
-            255,
-            255,
-            255,
-            ${alpha}
-          )`;
-
-
-    s.fill();
-  }
-
-
-  /*
-    NEBULOSAS
-  */
-
-  for (
-    let layer = 0;
-    layer < 2;
-    layer++
-  ) {
-
-    s.beginPath();
-
-
-    for (
-      let x = -100;
-      x < W + 100;
-      x += 18
-    ) {
-
-      const y =
-        H * .52 +
-
-        Math.sin(
-          x * .004 +
-          layer * 2 +
-          time * .00012
-        ) * 85 +
-
-        layer * 55 +
-
-        Math.sin(
-          x * .012 +
-          time * .0003
-        ) * 16;
-
-
-      if (x === -100)
-        s.moveTo(x, y);
-
-      else
-        s.lineTo(x, y);
-    }
-
-
-    s.strokeStyle =
-      layer
-
-        ? "rgba(70,220,255,.035)"
-
-        : "rgba(255,50,210,.035)";
-
-
-    s.lineWidth = 70;
-
-    s.stroke();
-  }
 }
 
 
 /* =========================================================
-   EXPLOSIONES
+   DIBUJAR ESTRELLAS
    ========================================================= */
 
-function burst(
-  x,
-  y,
-  power = 1
-) {
-
-  const amount =
-    Math.floor(
-      70 * power
-    );
-
+function drawStars(time) {
 
   for (
-    let i = 0;
-    i < amount;
-    i++
+    const star of stars
   ) {
 
-    const angle =
-      Math.random() *
-      Math.PI *
-      2;
+    const twinkle =
+      Math.sin(
+        time * .001 *
+        star.speed +
+        star.phase
+      ) * .25 + .75;
 
 
-    const speed =
-      random(
-        1.5,
-        7
-      ) *
-      power;
+    ctx.beginPath();
 
 
-    sparks.push({
-
-      x,
-      y,
-
-      vx:
-        Math.cos(angle) *
-        speed,
-
-      vy:
-        Math.sin(angle) *
-        speed,
-
-      life: 1,
-
-      decay:
-        random(
-          .012,
-          .028
-        ),
-
-      size:
-        random(
-          1,
-          3.5
-        ),
-
-      hue:
-        random(
-          0,
-          360
-        )
-    });
-  }
-
-
-  sparkCount +=
-    amount;
-
-
-  if (
-    navigator.vibrate
-  ) {
-
-    navigator.vibrate(
-      Math.min(
-        30,
-        Math.floor(
-          power * 12
-        )
-      )
-    );
-  }
-}
-
-
-/* =========================================================
-   FUEGOS ARTIFICIALES
-   ========================================================= */
-
-function createRocket() {
-
-  rockets.push({
-
-    x:
-      random(
-        W * .15,
-        W * .85
-      ),
-
-    y:
-      H + 20,
-
-    vx:
-      random(
-        -.6,
-        .6
-      ),
-
-    vy:
-      random(
-        -12,
-        -9
-      ),
-
-    target:
-      random(
-        H * .15,
-        H * .55
-      ),
-
-    trail: []
-  });
-}
-
-
-function drawEffects() {
-
-  f.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  if (
-    Math.random() <
-    .022
-  ) {
-
-    createRocket();
-  }
-
-
-  /*
-    COHETES
-  */
-
-  for (
-    let i = rockets.length - 1;
-    i >= 0;
-    i--
-  ) {
-
-    const rocket =
-      rockets[i];
-
-
-    rocket.trail.push([
-      rocket.x,
-      rocket.y
-    ]);
-
-
-    if (
-      rocket.trail.length >
-      10
-    ) {
-
-      rocket.trail.shift();
-    }
-
-
-    rocket.x +=
-      rocket.vx;
-
-    rocket.y +=
-      rocket.vy;
-
-    rocket.vy +=
-      .18;
-
-
-    if (
-      rocket.y <
-        rocket.target ||
-      rocket.vy > 0
-    ) {
-
-      burst(
-        rocket.x,
-        rocket.y,
-        random(
-          .7,
-          1.25
-        )
-      );
-
-
-      rockets.splice(
-        i,
-        1
-      );
-    }
-  }
-
-
-  /*
-    TRAILS
-  */
-
-  for (
-    const rocket of rockets
-  ) {
-
-    f.beginPath();
-
-
-    rocket.trail
-      .forEach(
-        (point, index) => {
-
-          if (index)
-            f.lineTo(
-              point[0],
-              point[1]
-            );
-
-          else
-            f.moveTo(
-              point[0],
-              point[1]
-            );
-        }
-      );
-
-
-    f.strokeStyle =
-      "rgba(255,255,255,.5)";
-
-    f.lineWidth = 2;
-
-    f.stroke();
-  }
-
-
-  /*
-    PARTICULAS
-  */
-
-  for (
-    let i = sparks.length - 1;
-    i >= 0;
-    i--
-  ) {
-
-    const p =
-      sparks[i];
-
-
-    p.x += p.vx;
-    p.y += p.vy;
-
-    p.vy += .045;
-
-    p.vx *= .987;
-    p.vy *= .987;
-
-    p.life -=
-      p.decay;
-
-
-    if (
-      p.life <= 0
-    ) {
-
-      sparks.splice(
-        i,
-        1
-      );
-
-      continue;
-    }
-
-
-    f.beginPath();
-
-    f.arc(
-      p.x,
-      p.y,
-      p.size *
-        p.life,
+    ctx.arc(
+      star.x,
+      star.y,
+      star.size,
       0,
       Math.PI * 2
     );
 
 
-    f.fillStyle =
+    ctx.fillStyle =
+      `rgba(255,255,255,${
+        star.alpha * twinkle
+      })`;
+
+
+    ctx.fill();
+  }
+}
+
+
+/* =========================================================
+   DIBUJAR PARTÍCULAS
+   ========================================================= */
+
+function drawParticles() {
+
+  for (
+    const particle of particles
+  ) {
+
+    particle.x +=
+      particle.vx;
+
+
+    particle.y +=
+      particle.vy;
+
+
+    if (
+      particle.x < 0
+    ) {
+
+      particle.x =
+        W;
+    }
+
+
+    if (
+      particle.x > W
+    ) {
+
+      particle.x =
+        0;
+    }
+
+
+    if (
+      particle.y < 0
+    ) {
+
+      particle.y =
+        H;
+    }
+
+
+    if (
+      particle.y > H
+    ) {
+
+      particle.y =
+        0;
+    }
+
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+      particle.x,
+      particle.y,
+      particle.radius,
+      0,
+      Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
       `hsla(
-        ${p.hue},
-        100%,
-        70%,
-        ${p.life}
+        ${particle.hue},
+        90%,
+        75%,
+        .22
       )`;
 
 
-    f.shadowBlur = 12;
-
-    f.shadowColor =
-      `hsl(
-        ${p.hue},
-        100%,
-        70%
-      )`;
-
-
-    f.fill();
-
-    f.shadowBlur = 0;
+    ctx.fill();
   }
 }
 
@@ -736,17 +382,64 @@ function drawEffects() {
    ANIMACIÓN
    ========================================================= */
 
-function animate(
-  timestamp
-) {
+function animate(time) {
 
-  time =
-    timestamp;
+  ctx.clearRect(
+    0,
+    0,
+    W,
+    H
+  );
 
 
-  drawStars();
+  /*
+    Fondo.
+  */
 
-  drawEffects();
+  const gradient =
+    ctx.createRadialGradient(
+      W * .5,
+      H * .45,
+      0,
+      W * .5,
+      H * .45,
+      Math.max(W,H)
+    );
+
+
+  gradient.addColorStop(
+    0,
+    "#10051d"
+  );
+
+
+  gradient.addColorStop(
+    .5,
+    "#06040d"
+  );
+
+
+  gradient.addColorStop(
+    1,
+    "#010105"
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  drawStars(time);
+
+  drawParticles();
 
 
   requestAnimationFrame(
@@ -755,7 +448,11 @@ function animate(
 }
 
 
-resize();
+/* =========================================================
+   INICIAR CANVAS
+   ========================================================= */
+
+resizeCanvas();
 
 requestAnimationFrame(
   animate
@@ -763,247 +460,7 @@ requestAnimationFrame(
 
 
 /* =========================================================
-   PARALLAX
-   ========================================================= */
-
-const card =
-  document.getElementById(
-    "card"
-  );
-
-
-addEventListener(
-  "pointermove",
-  event => {
-
-    mouse.x =
-      event.clientX;
-
-    mouse.y =
-      event.clientY;
-
-
-    if (
-      innerWidth <= 700
-    )
-      return;
-
-
-    const rect =
-      card.getBoundingClientRect();
-
-
-    const rotateX =
-      (
-        event.clientY -
-        (
-          rect.top +
-          rect.height / 2
-        )
-      ) /
-      rect.height *
-      -7;
-
-
-    const rotateY =
-      (
-        event.clientX -
-        (
-          rect.left +
-          rect.width / 2
-        )
-      ) /
-      rect.width *
-      9;
-
-
-    card.style.transform =
-      `
-      perspective(1100px)
-      rotateX(${rotateX}deg)
-      rotateY(${rotateY}deg)
-      `;
-  }
-);
-
-
-addEventListener(
-  "pointerleave",
-  () => {
-
-    card.style.transform =
-      "perspective(1100px) rotateX(0) rotateY(0)";
-  }
-);
-
-
-/* =========================================================
-   TOQUES
-   ========================================================= */
-
-addEventListener(
-  "pointerdown",
-  event => {
-
-    if (
-      event.target.closest(
-        "button,.panel"
-      )
-    )
-      return;
-
-
-    burst(
-      event.clientX,
-      event.clientY,
-      .8
-    );
-  }
-);
-
-
-/* =========================================================
-   MÚSICA
-   ========================================================= */
-
-let audioContext = null;
-let masterGain = null;
-let musicTimer = null;
-
-
-function toggleMusic() {
-
-  if (audioContext) {
-
-    audioContext.close();
-
-    audioContext =
-      null;
-
-    clearInterval(
-      musicTimer
-    );
-
-    document.getElementById(
-      "musicButton"
-    ).textContent = "♫";
-
-    return;
-  }
-
-
-  audioContext =
-    new (
-      window.AudioContext ||
-      window.webkitAudioContext
-    )();
-
-
-  masterGain =
-    audioContext.createGain();
-
-
-  masterGain.gain.value =
-    .035;
-
-
-  masterGain.connect(
-    audioContext.destination
-  );
-
-
-  const notes = [
-
-    261.63,
-    329.63,
-    392,
-    523.25,
-    392,
-    329.63,
-    293.66,
-    349.23
-
-  ];
-
-
-  let index = 0;
-
-
-  function playNote() {
-
-    if (!audioContext)
-      return;
-
-
-    const oscillator =
-      audioContext.createOscillator();
-
-
-    const gain =
-      audioContext.createGain();
-
-
-    oscillator.type =
-      "sine";
-
-
-    oscillator.frequency.value =
-      notes[
-        index++ %
-        notes.length
-      ];
-
-
-    gain.gain.setValueAtTime(
-      0,
-      audioContext.currentTime
-    );
-
-
-    gain.gain.linearRampToValueAtTime(
-      .7,
-      audioContext.currentTime + .05
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      audioContext.currentTime + 1.8
-    );
-
-
-    oscillator
-      .connect(gain)
-      .connect(masterGain);
-
-
-    oscillator.start();
-
-
-    oscillator.stop(
-      audioContext.currentTime + 1.9
-    );
-  }
-
-
-  playNote();
-
-
-  musicTimer =
-    setInterval(
-      playNote,
-      700
-    );
-
-
-  document.getElementById(
-    "musicButton"
-  ).textContent = "🔇";
-}
-
-
-/* =========================================================
-   PANTALLA COMPLETA
+   FULLSCREEN
    ========================================================= */
 
 async function enterFullscreen() {
@@ -1022,7 +479,7 @@ async function enterFullscreen() {
   } catch (error) {
 
     console.log(
-      "Fullscreen no disponible",
+      "Fullscreen no disponible:",
       error
     );
   }
@@ -1030,923 +487,893 @@ async function enterFullscreen() {
 
 
 /* =========================================================
-   INICIAR EXPERIENCIA
+   BLOQUEAR HORIZONTAL
    ========================================================= */
 
-document.getElementById(
-  "startExperience"
-).addEventListener(
-  "click",
-  async () => {
+async function lockLandscape() {
 
-    experienceStarted =
-      true;
+  try {
 
+    if (
+      screen.orientation &&
+      screen.orientation.lock
+    ) {
 
-    await enterFullscreen();
+      await screen.orientation.lock(
+        "landscape"
+      );
 
+    }
 
-    orientation.classList.add(
-      "hidden"
-    );
-
+  } catch (error) {
 
     /*
-      La música comienza aquí,
-      porque el usuario acaba de
-      realizar una interacción.
+      iOS/Safari puede rechazarlo.
+      La experiencia sigue funcionando.
     */
 
-    if (!audioContext)
-      toggleMusic();
-
-
-    burst(
-      W * .5,
-      H * .42,
-      1.8
+    console.log(
+      "Bloqueo horizontal no disponible:",
+      error
     );
   }
+}
+
+
+/* =========================================================
+   AUDIO
+   ========================================================= */
+
+function createAudio() {
+
+  if (
+    audioContext
+  ) {
+
+    return;
+  }
+
+
+  audioContext =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+
+  masterGain =
+    audioContext.createGain();
+
+
+  masterGain.gain.value =
+    .0001;
+
+
+  masterGain.connect(
+    audioContext.destination
+  );
+
+
+  /*
+    Pad principal.
+  */
+
+  createPad(
+    130.81,
+    0
+  );
+
+
+  createPad(
+    196,
+    .7
+  );
+
+
+  createPad(
+    261.63,
+    1.4
+  );
+
+
+  createPad(
+    329.63,
+    2.1
+  );
+}
+
+
+/* =========================================================
+   CREAR PAD
+   ========================================================= */
+
+function createPad(
+  frequency,
+  delay
+) {
+
+  const oscillator =
+    audioContext.createOscillator();
+
+
+  const gain =
+    audioContext.createGain();
+
+
+  oscillator.type =
+    "sine";
+
+
+  oscillator.frequency.value =
+    frequency;
+
+
+  gain.gain.value =
+    .03;
+
+
+  oscillator.connect(
+    gain
+  );
+
+
+  gain.connect(
+    masterGain
+  );
+
+
+  oscillator.start();
+
+
+  musicNodes.push({
+    oscillator,
+    gain,
+    delay
+  });
+}
+
+
+/* =========================================================
+   MÚSICA
+   ========================================================= */
+
+async function toggleMusic() {
+
+  createAudio();
+
+
+  if (
+    audioContext.state ===
+    "suspended"
+  ) {
+
+    await audioContext.resume();
+  }
+
+
+  const now =
+    audioContext.currentTime;
+
+
+  if (
+    musicPlaying
+  ) {
+
+    masterGain.gain
+      .cancelScheduledValues(
+        now
+      );
+
+
+    masterGain.gain
+      .linearRampToValueAtTime(
+        .0001,
+        now + 1
+      );
+
+
+    musicPlaying =
+      false;
+
+
+    musicButton.innerHTML =
+      "<span>♪</span> Música";
+
+    return;
+  }
+
+
+  masterGain.gain
+    .cancelScheduledValues(
+      now
+    );
+
+
+  masterGain.gain
+    .linearRampToValueAtTime(
+      .07,
+      now + 2
+    );
+
+
+  musicPlaying =
+    true;
+
+
+  musicButton.innerHTML =
+    "<span>♫</span> Música";
+}
+
+
+/* =========================================================
+   COMENZAR EXPERIENCIA
+   ========================================================= */
+
+async function startExperience() {
+
+  if (
+    started
+  ) {
+
+    return;
+  }
+
+
+  started =
+    true;
+
+
+  /*
+    IMPORTANTE:
+
+    Estas acciones ocurren directamente
+    después del toque del usuario.
+    Esto permite que el navegador
+    autorice fullscreen y audio.
+  */
+
+  await enterFullscreen();
+
+  await lockLandscape();
+
+  createAudio();
+
+  await toggleMusic();
+
+
+  /*
+    Activamos la experiencia.
+  */
+
+  experience.classList.add(
+    "active"
+  );
+
+
+  experience.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  /*
+    Desaparece la pantalla inicial.
+  */
+
+  orientation.classList.add(
+    "hidden"
+  );
+
+
+  /*
+    Efecto inicial.
+  */
+
+  createExplosion(
+    W * .5,
+    H * .45
+  );
+
+
+  setTimeout(
+    () => {
+
+      orientation.style.display =
+        "none";
+
+    },
+    1000
+  );
+}
+
+
+startButton.addEventListener(
+  "click",
+  startExperience
 );
 
 
 /* =========================================================
-   BOTONES DE CONTROL
+   EXPLOSIÓN
    ========================================================= */
 
-document.getElementById(
-  "musicButton"
-).onclick =
-  toggleMusic;
+function createExplosion(
+  centerX,
+  centerY
+) {
 
-
-document.getElementById(
-  "fullscreenButton"
-).onclick =
-  enterFullscreen;
-
-
-/* =========================================================
-   SORPRESA
-   ========================================================= */
-
-document.getElementById(
-  "surpriseButton"
-).onclick =
-  () => {
-
-    for (
-      let i = 0;
-      i < 10;
-      i++
-    ) {
-
-      setTimeout(
-        () => {
-
-          burst(
-            random(
-              W * .12,
-              W * .88
-            ),
-            random(
-              H * .15,
-              H * .7
-            ),
-            1.15
-          );
-
-        },
-        i * 130
-      );
-    }
-
-
-    setTimeout(
-      () => {
-
-        document
-          .getElementById(
-            "finalModal"
-          )
-          .classList.add(
-            "show"
-          );
-
-      },
-      900
+  const amount =
+    Math.floor(
+      Math.max(
+        80,
+        W / 5
+      )
     );
 
 
-    if (!audioContext)
-      toggleMusic();
-  };
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    const angle =
+      Math.random() *
+      Math.PI *
+      2;
 
 
-/* =========================================================
-   POEMA
-   ========================================================= */
-
-const poemText =
-
-`Que el tiempo te encuentre soñando,
-y la vida, sorprendiéndote.
-
-Que tengas noches llenas de estrellas,
-días que comiencen con ganas,
-y personas que conviertan
-los pequeños instantes
-en recuerdos enormes.
-
-Que este nuevo capítulo
-no sea solamente otro año,
-sino otra oportunidad
-para descubrir todo lo que aún puedes ser.`;
+    const velocity =
+      Math.random() *
+      7 +
+      2;
 
 
-const poemModal =
-  document.getElementById(
-    "poemModal"
-  );
+    particles.push({
 
+      x:
+        centerX,
 
-const typedText =
-  document.getElementById(
-    "typedText"
-  );
+      y:
+        centerY,
 
+      vx:
+        Math.cos(angle) *
+        velocity,
 
-let typingTimer;
+      vy:
+        Math.sin(angle) *
+        velocity,
 
+      radius:
+        Math.random() * 3 +
+        1,
 
-document.getElementById(
-  "poemButton"
-).onclick =
-  () => {
+      life:
+        1,
 
-    poemModal.classList.add(
-      "show"
-    );
+      hue:
+        Math.random() * 360,
 
-
-    typedText.textContent =
-      "";
-
-
-    clearInterval(
-      typingTimer
-    );
-
-
-    let index = 0;
-
-
-    typingTimer =
-      setInterval(
-        () => {
-
-          typedText.textContent +=
-            poemText[index++];
-
-          if (
-            index >=
-            poemText.length
-          ) {
-
-            clearInterval(
-              typingTimer
-            );
-          }
-
-        },
-        28
-      );
-  };
-
-
-/* =========================================================
-   CÁMARA
-   ========================================================= */
-
-const cameraModal =
-  document.getElementById(
-    "cameraModal"
-  );
-
-
-const cameraVideo =
-  document.getElementById(
-    "cameraVideo"
-  );
-
-
-const cameraMessage =
-  document.getElementById(
-    "cameraMessage"
-  );
-
-
-let cameraStream =
-  null;
-
-
-async function openCamera() {
-
-  cameraModal.classList.add(
-    "show"
-  );
-
-
-  try {
-
-    cameraStream =
-      await navigator
-        .mediaDevices
-        .getUserMedia({
-
-          video: {
-
-            facingMode:
-              "user",
-
-            width: {
-              ideal: 1280
-            },
-
-            height: {
-              ideal: 720
-            }
-          },
-
-          audio: false
-        });
-
-
-    cameraVideo.srcObject =
-      cameraStream;
-
-
-    cameraVideo.style.display =
-      "block";
-
-
-  } catch (error) {
-
-    cameraMessage.innerHTML =
-
-      `
-      <strong>
-        No pudimos acceder a la cámara.
-      </strong>
-
-      <br><br>
-
-      Puedes cerrar esta ventana
-      y conservar el poema.
-
-      <br><br>
-
-      <small>
-        Si quieres usar la cámara,
-        revisa los permisos del navegador.
-      </small>
-      `;
-
-    document.getElementById(
-      "takePhotoButton"
-    ).style.display =
-      "none";
+      explosion:
+        true
+    });
   }
 }
 
 
-function closeCamera() {
+/* =========================================================
+   BOTÓN DE MÚSICA
+   ========================================================= */
 
-  cameraModal.classList.remove(
-    "show"
-  );
-
-
-  if (cameraStream) {
-
-    cameraStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-  }
-
-
-  cameraStream =
-    null;
-
-
-  cameraVideo.srcObject =
-    null;
-
-
-  cameraVideo.style.display =
-    "none";
-}
+musicButton.addEventListener(
+  "click",
+  toggleMusic
+);
 
 
 /* =========================================================
    GUARDAR MOMENTO
    ========================================================= */
 
-document.getElementById(
-  "saveMomentButton"
-).onclick =
-  openCamera;
-
-
-document.getElementById(
-  "closeCameraButton"
-).onclick =
-  closeCamera;
+momentButton.addEventListener(
+  "click",
+  saveMoment
+);
 
 
 /* =========================================================
-   TOMAR FOTO
+   CAPTURAR MOMENTO
    ========================================================= */
 
-document.getElementById(
-  "takePhotoButton"
-).onclick =
-  () => {
-
-    if (
-      !cameraVideo.videoWidth
-    )
-      return;
-
-
-    const snapshot =
-      document.createElement(
-        "canvas"
-      );
-
-
-    snapshot.width =
-      cameraVideo.videoWidth;
-
-
-    snapshot.height =
-      cameraVideo.videoHeight;
-
-
-    const context =
-      snapshot.getContext(
-        "2d"
-      );
-
-
-    /*
-      La cámara frontal suele
-      verse espejada. Lo corregimos.
-    */
-
-    context.translate(
-      snapshot.width,
-      0
-    );
-
-
-    context.scale(
-      -1,
-      1
-    );
-
-
-    context.drawImage(
-      cameraVideo,
-      0,
-      0
-    );
-
-
-    const image =
-      new Image();
-
-
-    image.onload =
-      () => {
-
-        const memory =
-          createMemoryImage(
-            image
-          );
-
-
-        downloadMemory(
-          memory
-        );
-
-
-        closeCamera();
-
-        poemModal.classList.remove(
-          "show"
-        );
-      };
-
-
-    image.src =
-      snapshot.toDataURL(
-        "image/jpeg",
-        .92
-      );
-  };
-
-
-/* =========================================================
-   CREAR POSTAL / RECUERDO
-   ========================================================= */
-
-function createMemoryImage(
-  image
-) {
+async function saveMoment() {
 
   /*
-    Formato horizontal
-    tipo postal.
+    Flash.
   */
 
-  const canvas =
+  flash.classList.remove(
+    "flash"
+  );
+
+
+  void flash.offsetWidth;
+
+
+  flash.classList.add(
+    "flash"
+  );
+
+
+  /*
+    Creamos una imagen
+    completamente independiente
+    del DOM.
+
+    Esto evita necesitar html2canvas.
+  */
+
+  const imageCanvas =
     document.createElement(
       "canvas"
     );
 
 
-  const width = 1600;
-  const height = 900;
+  const imageWidth =
+    2400;
 
 
-  canvas.width =
-    width;
-
-  canvas.height =
-    height;
+  const imageHeight =
+    1350;
 
 
-  const context =
-    canvas.getContext(
+  imageCanvas.width =
+    imageWidth;
+
+
+  imageCanvas.height =
+    imageHeight;
+
+
+  const imageCtx =
+    imageCanvas.getContext(
       "2d"
     );
 
 
   /*
-    FONDO
+    Fondo.
   */
 
-  const background =
-    context.createLinearGradient(
+  const bg =
+    imageCtx.createLinearGradient(
       0,
       0,
-      width,
-      height
+      imageWidth,
+      imageHeight
     );
 
 
-  background.addColorStop(
+  bg.addColorStop(
     0,
-    "#07020e"
+    "#06030d"
   );
 
 
-  background.addColorStop(
-    .55,
-    "#12051f"
+  bg.addColorStop(
+    .5,
+    "#170724"
   );
 
 
-  background.addColorStop(
+  bg.addColorStop(
     1,
-    "#03131a"
+    "#020207"
   );
 
 
-  context.fillStyle =
-    background;
+  imageCtx.fillStyle =
+    bg;
 
 
-  context.fillRect(
+  imageCtx.fillRect(
     0,
     0,
-    width,
-    height
-  );
-
-
-  /*
-    BRILLO ROSA
-  */
-
-  const pinkGlow =
-    context.createRadialGradient(
-      350,
-      430,
-      20,
-      350,
-      430,
-      650
-    );
-
-
-  pinkGlow.addColorStop(
-    0,
-    "rgba(255,60,215,.25)"
-  );
-
-
-  pinkGlow.addColorStop(
-    1,
-    "rgba(255,60,215,0)"
-  );
-
-
-  context.fillStyle =
-    pinkGlow;
-
-
-  context.fillRect(
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  /*
-    BRILLO AZUL
-  */
-
-  const blueGlow =
-    context.createRadialGradient(
-      1350,
-      450,
-      20,
-      1350,
-      450,
-      600
-    );
-
-
-  blueGlow.addColorStop(
-    0,
-    "rgba(60,220,255,.18)"
-  );
-
-
-  blueGlow.addColorStop(
-    1,
-    "rgba(60,220,255,0)"
-  );
-
-
-  context.fillStyle =
-    blueGlow;
-
-
-  context.fillRect(
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  /*
-    BORDE
-  */
-
-  context.strokeStyle =
-    "rgba(255,255,255,.25)";
-
-
-  context.lineWidth = 3;
-
-
-  context.strokeRect(
-    34,
-    34,
-    width - 68,
-    height - 68
-  );
-
-
-  /*
-    FOTO
-  */
-
-  const photoX = 75;
-  const photoY = 105;
-
-  const photoWidth = 720;
-  const photoHeight = 690;
-
-
-  context.save();
-
-
-  context.beginPath();
-
-
-  context.roundRect(
-    photoX,
-    photoY,
-    photoWidth,
-    photoHeight,
-    28
-  );
-
-
-  context.clip();
-
-
-  const scale =
-    Math.max(
-      photoWidth /
-        image.width,
-
-      photoHeight /
-        image.height
-    );
-
-
-  const imageWidth =
-    image.width *
-    scale;
-
-
-  const imageHeight =
-    image.height *
-    scale;
-
-
-  context.drawImage(
-
-    image,
-
-    photoX +
-      (
-        photoWidth -
-        imageWidth
-      ) / 2,
-
-    photoY +
-      (
-        photoHeight -
-        imageHeight
-      ) / 2,
-
     imageWidth,
     imageHeight
   );
 
 
-  context.restore();
+  /*
+    Estrellas.
+  */
+
+  imageCtx.fillStyle =
+    "rgba(255,255,255,.7)";
+
+
+  for (
+    let i = 0;
+    i < 260;
+    i++
+  ) {
+
+    const x =
+      Math.random() *
+      imageWidth;
+
+
+    const y =
+      Math.random() *
+      imageHeight;
+
+
+    const radius =
+      Math.random() *
+      3 +
+      .5;
+
+
+    imageCtx.beginPath();
+
+
+    imageCtx.arc(
+      x,
+      y,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+
+    imageCtx.fill();
+  }
 
 
   /*
-    MARCO DE FOTO
+    Título.
   */
 
-  context.strokeStyle =
-    "rgba(255,255,255,.3)";
+  imageCtx.textAlign =
+    "left";
 
 
-  context.lineWidth = 2;
+  imageCtx.textBaseline =
+    "top";
 
 
-  context.strokeRect(
-    photoX,
-    photoY,
-    photoWidth,
-    photoHeight
+  imageCtx.font =
+    "800 150px system-ui";
+
+
+  imageCtx.fillStyle =
+    "white";
+
+
+  imageCtx.fillText(
+    "Feliz",
+    180,
+    170
+  );
+
+
+  const gradient =
+    imageCtx.createLinearGradient(
+      180,
+      330,
+      1300,
+      330
+    );
+
+
+  gradient.addColorStop(
+    0,
+    "#ff63dc"
+  );
+
+
+  gradient.addColorStop(
+    .5,
+    "#7eeeff"
+  );
+
+
+  gradient.addColorStop(
+    1,
+    "#ffffff"
+  );
+
+
+  imageCtx.fillStyle =
+    gradient;
+
+
+  imageCtx.font =
+    "800 150px system-ui";
+
+
+  imageCtx.fillText(
+    "cumpleaños",
+    180,
+    330
   );
 
 
   /*
-    TEXTO
+    Línea.
   */
 
-  context.fillStyle =
-    "#ffffff";
+  imageCtx.fillStyle =
+    "#ff63dc";
 
 
-  context.font =
-    "700 62px system-ui";
-
-
-  context.fillText(
-    "Para tu",
-    900,
-    160
-  );
-
-
-  context.fillText(
-    "nuevo año",
-    900,
-    230
+  imageCtx.fillRect(
+    180,
+    540,
+    500,
+    5
   );
 
 
   /*
-    POEMA
+    Poema a la derecha.
   */
 
-  context.font =
-    "italic 28px Georgia";
+  const poemX =
+    imageWidth * .57;
 
 
-  context.fillStyle =
-    "#eadff0";
+  let poemY =
+    250;
+
+
+  imageCtx.font =
+    "italic 42px Georgia";
+
+
+  imageCtx.fillStyle =
+    "rgba(255,255,255,.85)";
 
 
   const lines = [
 
-    "Que el tiempo te encuentre soñando,",
-
-    "y la vida, sorprendiéndote.",
-
+    "Que nunca te falten motivos",
+    "para mirar hacia arriba,",
     "",
+    "estrellas que aparezcan",
+    "justo cuando las necesites,",
+    "",
+    "personas que hagan más ligero",
+    "el camino,",
+    "",
+    "y momentos que algún día",
+    "recuerdes sonriendo."
 
-    "Que tengas noches llenas de estrellas,",
-
-    "días que comiencen con ganas,",
-
-    "y personas que conviertan",
-
-    "los pequeños instantes",
-
-    "en recuerdos enormes."
   ];
-
-
-  let y = 315;
 
 
   for (
     const line of lines
   ) {
 
-    context.fillText(
+    imageCtx.fillText(
       line,
-      900,
-      y
+      poemX,
+      poemY
     );
 
 
-    y += 48;
+    poemY +=
+      60;
   }
 
 
   /*
-    FIRMA
+    Frase final.
   */
 
-  context.font =
-    "700 22px system-ui";
+  imageCtx.font =
+    "bold 46px Georgia";
 
 
-  context.fillStyle =
-    "#79efff";
+  imageCtx.fillStyle =
+    "#ffffff";
 
 
-  context.fillText(
-    "✨ FELIZ CUMPLE ✨",
-    900,
-    735
+  imageCtx.fillText(
+    "Que este nuevo capítulo sea extraordinario.",
+    180,
+    760
   );
 
 
-  context.font =
-    "20px system-ui";
+  /*
+    Firma.
+  */
+
+  imageCtx.font =
+    "italic 36px Georgia";
 
 
-  context.fillStyle =
-    "rgba(255,255,255,.45)";
+  imageCtx.fillStyle =
+    "rgba(255,255,255,.55)";
 
 
-  context.fillText(
-    "Un recuerdo creado en este momento",
-    900,
-    780
+  imageCtx.fillText(
+    "— Para ti, con cariño.",
+    180,
+    880
   );
 
 
-  return canvas.toDataURL(
-    "image/jpeg",
-    .94
-  );
-}
+  /*
+    Fecha.
+  */
+
+  imageCtx.font =
+    "24px system-ui";
 
 
-/* =========================================================
-   DESCARGAR POSTAL
-   ========================================================= */
-
-function downloadMemory(
-  data
-) {
-
-  const link =
-    document.createElement(
-      "a"
-    );
+  imageCtx.fillStyle =
+    "rgba(255,255,255,.35)";
 
 
-  link.href =
-    data;
-
-
-  link.download =
-    "recuerdo-feliz-cumple.jpg";
-
-
-  document.body.appendChild(
-    link
+  imageCtx.fillText(
+    new Date().toLocaleDateString(
+      "es-ES",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    ),
+    180,
+    950
   );
 
 
-  link.click();
+  /*
+    Convertimos a PNG.
+  */
+
+  imageCanvas.toBlob(
+    blob => {
+
+      if (!blob) {
+
+        return;
+      }
 
 
-  link.remove();
-}
+      const url =
+        URL.createObjectURL(
+          blob
+        );
 
 
-/* =========================================================
-   FINAL
-   ========================================================= */
+      const link =
+        document.createElement(
+          "a"
+        );
 
-document.getElementById(
-  "closeFinalButton"
-).onclick =
-  () => {
 
-    document
-      .getElementById(
-        "finalModal"
-      )
-      .classList.remove(
+      link.href =
+        url;
+
+
+      link.download =
+        "mi-momento-especial.png";
+
+
+      link.click();
+
+
+      setTimeout(
+        () => {
+
+          URL.revokeObjectURL(
+            url
+          );
+
+        },
+        1000
+      );
+
+
+      /*
+        Mensaje.
+      */
+
+      saveMessage.classList.add(
         "show"
       );
-  };
+
+
+      setTimeout(
+        () => {
+
+          saveMessage.classList.remove(
+            "show"
+          );
+
+        },
+        2200
+      );
+
+    },
+    "image/png"
+  );
+}
 
 
 /* =========================================================
-   ESC
+   TOQUE EN LA EXPERIENCIA
    ========================================================= */
 
-addEventListener(
-  "keydown",
+experience.addEventListener(
+  "pointerdown",
   event => {
 
+    /*
+      Solo creamos pequeñas
+      partículas donde toca.
+    */
+
     if (
-      event.key !==
-      "Escape"
-    )
-      return;
-
-
-    document
-      .querySelectorAll(
-        ".modal"
+      event.target.closest(
+        "button"
       )
-      .forEach(
-        modal =>
-          modal.classList.remove(
-            "show"
-          )
-      );
+    ) {
+
+      return;
+    }
+
+
+    createExplosion(
+      event.clientX,
+      event.clientY
+    );
+
   }
 );
 
 
 /* =========================================================
-   INICIALIZACIÓN
+   PREVENIR ZOOM ACCIDENTAL
    ========================================================= */
 
-updateOrientation();
+document.addEventListener(
+  "gesturestart",
+  event => {
+
+    event.preventDefault();
+
+  }
+);
 
 
-/*
-  Explosiones iniciales.
-*/
+/* =========================================================
+   ESCAPE DE FULLSCREEN
+   ========================================================= */
 
-setTimeout(
+document.addEventListener(
+  "fullscreenchange",
   () => {
 
-    burst(
-      W * .5,
-      H * .35,
-      1.4
-    );
+    /*
+      Si el usuario sale de fullscreen,
+      no destruimos la experiencia.
+    */
 
-  },
-  900
+    if (
+      document.fullscreenElement ===
+      null &&
+      started
+    ) {
+
+      console.log(
+        "El usuario salió de pantalla completa."
+      );
+    }
+  }
 );

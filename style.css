@@ -1,31 +1,75 @@
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
 :root {
-  --pink: #ff4fd8;
-  --cyan: #59edff;
-  --gold: #ffe18a;
-  --background: #03020b;
-  --glass: rgba(255,255,255,.07);
+
+  --background:
+    #05030b;
+
+  --white:
+    #ffffff;
+
+  --soft-white:
+    rgba(255,255,255,.78);
+
+  --muted:
+    rgba(255,255,255,.52);
+
+  --pink:
+    #ff4fd8;
+
+  --cyan:
+    #57e7ff;
+
+  --purple:
+    #9d65ff;
+
+  --glass:
+    rgba(255,255,255,.055);
+
+  --border:
+    rgba(255,255,255,.14);
 }
+
 
 /* =========================================================
    RESET
    ========================================================= */
 
 * {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+
+  box-sizing:
+    border-box;
+
+  -webkit-tap-highlight-color:
+    transparent;
 }
+
 
 html,
 body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
 
-  overflow: hidden;
+  width:
+    100%;
 
-  background: var(--background);
+  min-height:
+    100%;
 
-  color: white;
+  margin:
+    0;
+
+  padding:
+    0;
+
+  overflow:
+    hidden;
+
+  background:
+    var(--background);
+
+  color:
+    white;
 
   font-family:
     system-ui,
@@ -33,8 +77,439 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
 
-  touch-action: none;
+
+button {
+
+  font:
+    inherit;
+}
+
+
+/* =========================================================
+   PANTALLA DE ORIENTACIÓN
+   ========================================================= */
+
+#orientation {
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    10000;
+
+  width:
+    100%;
+
+  height:
+    100dvh;
+
+  min-height:
+    100dvh;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  overflow:
+    hidden;
+
+  padding:
+    5vh 5vw;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      #1b0730 0%,
+      #09040f 48%,
+      #020106 100%
+    );
+
+  text-align:
+    center;
+
+  transition:
+    opacity .8s ease,
+    visibility .8s ease;
+}
+
+
+@supports not (height: 100dvh) {
+
+  #orientation {
+
+    height:
+      100vh;
+
+    min-height:
+      100vh;
+  }
+}
+
+
+#orientation.hidden {
+
+  opacity:
+    0;
+
+  visibility:
+    hidden;
+
+  pointer-events:
+    none;
+}
+
+
+.orientation-content {
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+}
+
+
+/* =========================================================
+   MENSAJE VERTICAL
+   ========================================================= */
+
+.rotate-message {
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    2vh;
+}
+
+
+.rotate-icon {
+
+  font-size:
+    clamp(
+      4rem,
+      18vw,
+      8rem
+    );
+
+  line-height:
+    1;
+
+  animation:
+    rotateHint
+    2.4s
+    ease-in-out
+    infinite;
+
+  text-shadow:
+    0 0 4vw
+    rgba(255,70,220,.55);
+}
+
+
+@keyframes rotateHint {
+
+  0%,
+  100% {
+
+    transform:
+      rotate(0deg)
+      scale(1);
+  }
+
+  45%,
+  75% {
+
+    transform:
+      rotate(90deg)
+      scale(1.08);
+  }
+}
+
+
+.rotate-message h1 {
+
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      1.8rem,
+      7vw,
+      4rem
+    );
+
+  line-height:
+    1;
+}
+
+
+.rotate-message p {
+
+  max-width:
+    80vw;
+
+  margin:
+    0;
+
+  color:
+    var(--muted);
+
+  font-size:
+    clamp(
+      .85rem,
+      3vw,
+      1.1rem
+    );
+
+  line-height:
+    1.5;
+}
+
+
+/* =========================================================
+   PANTALLA HORIZONTAL
+   ========================================================= */
+
+.start-gate {
+
+  display:
+    none;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    2vh;
+}
+
+
+.fullscreen-button {
+
+  width:
+    clamp(
+      4.5rem,
+      15vh,
+      8rem
+    );
+
+  aspect-ratio:
+    1;
+
+  padding:
+    0;
+
+  border:
+    .08rem solid
+    rgba(255,255,255,.4);
+
+  border-radius:
+    50%;
+
+  background:
+    rgba(255,255,255,.07);
+
+  color:
+    white;
+
+  font-size:
+    clamp(
+      1.5rem,
+      6vh,
+      3rem
+    );
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  cursor:
+    pointer;
+
+  box-shadow:
+    0 0 5vh
+    rgba(255,60,220,.28),
+
+    inset
+    0 0 3vh
+    rgba(255,255,255,.04);
+
+  animation:
+    buttonPulse
+    2s
+    ease-in-out
+    infinite;
+
+  transition:
+    transform .2s ease;
+}
+
+
+.fullscreen-button:active {
+
+  transform:
+    scale(.9);
+}
+
+
+@keyframes buttonPulse {
+
+  0%,
+  100% {
+
+    transform:
+      scale(1);
+  }
+
+  50% {
+
+    transform:
+      scale(1.08);
+  }
+}
+
+
+.start-gate span {
+
+  color:
+    rgba(255,255,255,.72);
+
+  font-size:
+    clamp(
+      .8rem,
+      2.5vh,
+      1.1rem
+    );
+
+  letter-spacing:
+    .04em;
+}
+
+
+@media (orientation: landscape) {
+
+  #rotateMessage {
+
+    display:
+      none;
+  }
+
+
+  #startGate {
+
+    display:
+      flex;
+  }
+}
+
+
+@media (orientation: portrait) {
+
+  #rotateMessage {
+
+    display:
+      flex;
+  }
+
+
+  #startGate {
+
+    display:
+      none;
+  }
+}
+
+
+/* =========================================================
+   EXPERIENCIA
+   ========================================================= */
+
+#experience {
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  width:
+    100%;
+
+  height:
+    100dvh;
+
+  overflow:
+    hidden;
+
+  opacity:
+    0;
+
+  visibility:
+    hidden;
+
+  transform:
+    scale(1.05);
+
+  transition:
+    opacity 1.5s ease,
+    transform 2s cubic-bezier(.2,.8,.2,1),
+    visibility 1.5s ease;
+
+  background:
+    #030207;
+}
+
+
+#experience.active {
+
+  opacity:
+    1;
+
+  visibility:
+    visible;
+
+  transform:
+    scale(1);
+}
+
+
+@supports not (height: 100dvh) {
+
+  #experience {
+
+    height:
+      100vh;
+  }
 }
 
 
@@ -42,748 +517,367 @@ body {
    CANVAS
    ========================================================= */
 
-canvas {
-  position: fixed;
+#spaceCanvas {
 
-  inset: 0;
+  position:
+    absolute;
 
-  width: 100%;
-  height: 100%;
+  inset:
+    0;
 
-  display: block;
-}
+  width:
+    100%;
 
-#space {
-  z-index: 0;
-}
+  height:
+    100%;
 
-#fx {
-  z-index: 2;
-
-  pointer-events: none;
+  display:
+    block;
 }
 
 
 /* =========================================================
-   VIGNETTE
+   AURORAS
    ========================================================= */
 
-.vignette {
+.aurora {
 
-  position: fixed;
+  position:
+    absolute;
 
-  inset: 0;
+  width:
+    60vw;
 
-  z-index: 3;
+  height:
+    60vw;
 
-  pointer-events: none;
+  max-width:
+    80vh;
 
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      transparent 0%,
-      rgba(0,0,0,.15) 55%,
-      rgba(0,0,0,.85) 100%
-    );
-}
-
-
-/* =========================================================
-   ORIENTACIÓN
-   ========================================================= */
-
-#orientation {
-
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 100;
-
-  display: grid;
-
-  place-items: center;
-
-  text-align: center;
-
-  padding: 30px;
-
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      #1c0a32,
-      #020107 70%
-    );
-}
-
-#orientation.hidden {
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  transition: opacity .7s ease;
-}
-
-
-.orientation-content {
-  max-width: 500px;
-}
-
-
-/* =========================================================
-   TELÉFONO ANIMADO
-   ========================================================= */
-
-.phone-icon {
-
-  width: 75px;
-
-  height: 135px;
-
-  border:
-    2px solid
-    rgba(255,255,255,.9);
-
-  border-radius: 16px;
-
-  margin: auto;
-
-  position: relative;
-
-  animation:
-    rotatePhone 2.5s
-    ease-in-out
-    infinite;
-
-  box-shadow:
-    0 0 35px
-    rgba(255,70,220,.3);
-}
-
-
-.phone-icon::after {
-
-  content: "";
-
-  position: absolute;
-
-  width: 23px;
-
-  height: 3px;
-
-  border-radius: 5px;
-
-  background: white;
-
-  bottom: 8px;
-
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  opacity: .5;
-}
-
-
-@keyframes rotatePhone {
-
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-
-  45%,
-  75% {
-    transform: rotate(90deg);
-  }
-}
-
-
-.orientation-content h1 {
-
-  margin:
-    25px
-    0
-    10px;
-
-  font-size:
-    clamp(
-      2rem,
-      7vw,
-      3.5rem
-    );
-}
-
-
-.orientation-content p {
-
-  color: #bdb0ca;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   BOTÓN DE ENTRADA
-   ========================================================= */
-
-#startGate {
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 7px;
-
-  margin-top: 30px;
-}
-
-
-#startGate span {
-
-  color: #a99bb4;
-
-  font-size: .75rem;
-}
-
-
-.fullscreen-button {
-
-  width: 75px;
-
-  height: 75px;
-
-  border-radius: 50%;
-
-  font-size: 1.7rem;
-
-  border:
-    1px solid
-    rgba(255,255,255,.4);
-
-  color: white;
-
-  background:
-    rgba(255,255,255,.08);
-
-  box-shadow:
-    0 0 45px
-    rgba(255,70,220,.3);
-
-  animation:
-    pulseButton
-    1.8s
-    ease-in-out
-    infinite;
-}
-
-
-@keyframes pulseButton {
-
-  50% {
-
-    transform: scale(1.08);
-
-    box-shadow:
-      0 0 75px
-      rgba(80,220,255,.35);
-  }
-}
-
-
-/* =========================================================
-   APP
-   ========================================================= */
-
-#app {
-
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 5;
-
-  display: grid;
-
-  place-items: center;
-
-  padding:
-    max(18px, env(safe-area-inset-top))
-    max(18px, env(safe-area-inset-right))
-    max(18px, env(safe-area-inset-bottom))
-    max(18px, env(safe-area-inset-left));
-}
-
-
-/* =========================================================
-   TARJETA
-   ========================================================= */
-
-#card {
-
-  width: min(920px, 94vw);
-
-  height: min(690px, 88vh);
-
-  min-height: 420px;
-
-  position: relative;
-
-  display: grid;
-
-  place-items: center;
-
-  text-align: center;
-
-  border:
-    1px solid
-    rgba(255,255,255,.14);
+  max-height:
+    80vh;
 
   border-radius:
-    clamp(
-      22px,
-      4vw,
-      36px
-    );
+    50%;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.075),
-      rgba(255,255,255,.018)
-    );
+  filter:
+    blur(7vw);
 
-  box-shadow:
+  opacity:
+    .16;
 
-    0 0 100px
-    rgba(255,0,210,.13),
-
-    inset
-    0 1px
-    rgba(255,255,255,.12);
-
-  backdrop-filter:
-    blur(13px);
-
-  transform-style: preserve-3d;
-
-  transition:
-    transform .12s ease-out;
-
-  overflow: hidden;
+  pointer-events:
+    none;
 }
 
 
-#card::before {
+.aurora-one {
 
-  content: "";
+  top:
+    -20vh;
 
-  position: absolute;
-
-  inset: -2px;
-
-  border-radius: inherit;
-
-  padding: 2px;
+  left:
+    -10vw;
 
   background:
-    conic-gradient(
-      from var(--angle),
-      transparent,
-      #ff49d7,
-      transparent 28%,
-      #4beaff,
-      transparent 52%,
-      #ff49d7,
-      transparent 76%
-    );
-
-  -webkit-mask:
-    linear-gradient(#000 0 0)
-    content-box,
-
-    linear-gradient(#000 0 0);
-
-  -webkit-mask-composite: xor;
-
-  mask-composite: exclude;
+    #ff2fc8;
 
   animation:
-    borderSpin
-    8s linear
-    infinite;
-
-  opacity: .7;
+    floatOne
+    12s
+    ease-in-out
+    infinite alternate;
 }
 
 
-@property --angle {
+.aurora-two {
 
-  syntax: "<angle>";
+  right:
+    -15vw;
 
-  initial-value: 0deg;
+  bottom:
+    -20vh;
 
-  inherits: false;
+  background:
+    #4c6fff;
+
+  animation:
+    floatTwo
+    15s
+    ease-in-out
+    infinite alternate;
 }
 
 
-@keyframes borderSpin {
+@keyframes floatOne {
 
   to {
-    --angle: 360deg;
+
+    transform:
+      translate(
+        8vw,
+        8vh
+      )
+      scale(1.2);
   }
 }
 
 
-.card-content {
+@keyframes floatTwo {
 
-  position: relative;
+  to {
 
-  z-index: 2;
-
-  padding: 28px;
-
-  max-width: 850px;
-
-  transform:
-    translateZ(50px);
+    transform:
+      translate(
+        -8vw,
+        -5vh
+      )
+      scale(1.25);
+  }
 }
 
 
 /* =========================================================
-   TEXTO
+   ESCENA
+   ========================================================= */
+
+.birthday-scene {
+
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  padding:
+    6vh 8vw;
+
+  overflow:
+    auto;
+
+  z-index:
+    3;
+}
+
+
+.scene-content {
+
+  width:
+    min(82vw, 70rem);
+
+  max-height:
+    92dvh;
+
+  overflow:
+    auto;
+
+  text-align:
+    center;
+
+  scrollbar-width:
+    none;
+
+  animation:
+    contentAppear
+    2s
+    ease
+    both;
+}
+
+
+.scene-content::-webkit-scrollbar {
+
+  display:
+    none;
+}
+
+
+@keyframes contentAppear {
+
+  from {
+
+    opacity:
+      0;
+
+    transform:
+      translateY(4vh);
+  }
+
+  to {
+
+    opacity:
+      1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   TITULOS
    ========================================================= */
 
 .eyebrow {
 
-  font-size: .72rem;
-
-  letter-spacing: .42em;
-
-  text-transform: uppercase;
-
-  color: #b9abc8;
-
-  margin-bottom: 18px;
-}
-
-
-#card h2 {
-
-  margin: 0;
+  color:
+    var(--cyan);
 
   font-size:
     clamp(
-      4rem,
-      12vw,
-      9rem
+      .55rem,
+      1.4vw,
+      .85rem
     );
 
-  line-height: .78;
+  letter-spacing:
+    .35em;
 
-  letter-spacing: -.08em;
+  margin-bottom:
+    2vh;
+
+  opacity:
+    .75;
+}
+
+
+.birthday-title {
+
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      3rem,
+      10vw,
+      8rem
+    );
+
+  line-height:
+    .85;
+
+  letter-spacing:
+    -.06em;
+
+  font-weight:
+    800;
+
+  text-shadow:
+    0 0 4vw
+    rgba(255,255,255,.12);
+}
+
+
+.birthday-title span {
+
+  display:
+    block;
 
   background:
     linear-gradient(
       100deg,
       #fff,
-      #ffb8ef 30%,
-      #ff42d5 52%,
-      #72f3ff 78%,
+      #ff7ce4,
+      #7eeeff,
       #fff
     );
 
-  color: transparent;
+  background-size:
+    250% 100%;
 
-  background-clip: text;
+  -webkit-background-clip:
+    text;
 
-  -webkit-background-clip: text;
+  background-clip:
+    text;
 
-  filter:
-    drop-shadow(
-      0 0 28px
-      rgba(255,40,215,.35)
-    );
+  color:
+    transparent;
 
   animation:
-    breathe 4s ease-in-out infinite;
+    gradientFlow
+    5s
+    linear
+    infinite;
 }
 
 
-@keyframes breathe {
+@keyframes gradientFlow {
 
-  50% {
+  from {
 
-    filter:
-      drop-shadow(
-        0 0 48px
-        rgba(255,40,215,.68)
-      );
+    background-position:
+      0% 50%;
+  }
+
+  to {
+
+    background-position:
+      250% 50%;
   }
 }
 
 
-.subtitle {
-
-  font-size:
-    clamp(
-      .98rem,
-      2.3vw,
-      1.3rem
-    );
-
-  line-height: 1.65;
-
-  color: #e9deef;
-
-  max-width: 650px;
-
-  margin:
-    28px
-    auto
-    30px;
-}
-
-
 /* =========================================================
-   BOTONES
+   LINEA
    ========================================================= */
 
-.buttons {
-
-  display: flex;
-
-  justify-content: center;
-
-  gap: 10px;
-
-  flex-wrap: wrap;
-}
-
-
-button {
-
-  border:
-    1px solid
-    rgba(255,255,255,.2);
-
-  color: white;
-
-  background:
-    rgba(255,255,255,.08);
-
-  border-radius: 999px;
-
-  padding:
-    14px
-    20px;
-
-  font-size: .95rem;
-
-  font-weight: 750;
-
-  cursor: pointer;
-
-  transition: .2s;
-
-  backdrop-filter: blur(8px);
-}
-
-
-button:hover,
-button:active {
-
-  transform:
-    translateY(-2px)
-    scale(1.025);
-
-  background:
-    rgba(255,255,255,.15);
-
-  box-shadow:
-    0 0 30px
-    rgba(255,55,215,.2);
-}
-
-
-.primary-button {
-
-  background:
-    linear-gradient(
-      100deg,
-      rgba(255,45,210,.28),
-      rgba(65,220,255,.18)
-    );
-
-  border-color:
-    rgba(255,255,255,.3);
-}
-
-
-/* =========================================================
-   CONTROLES
-   ========================================================= */
-
-#controls {
-
-  position: fixed;
-
-  z-index: 7;
-
-  right:
-    max(
-      12px,
-      env(safe-area-inset-right)
-    );
-
-  top:
-    max(
-      12px,
-      env(safe-area-inset-top)
-    );
-
-  display: flex;
-
-  gap: 8px;
-}
-
-
-.control-button {
-
-  width: 44px;
-
-  height: 44px;
-
-  padding: 0;
-
-  display: grid;
-
-  place-items: center;
-}
-
-
-/* =========================================================
-   MODALES
-   ========================================================= */
-
-.modal {
-
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 20;
-
-  display: grid;
-
-  place-items: center;
-
-  padding: 25px;
-
-  background:
-    rgba(2,0,8,.68);
-
-  backdrop-filter:
-    blur(15px);
-
-  opacity: 0;
-
-  pointer-events: none;
-
-  transition: .55s;
-}
-
-
-.modal.show {
-
-  opacity: 1;
-
-  pointer-events: auto;
-}
-
-
-.panel {
+.line {
 
   width:
-    min(
-      720px,
-      92vw
-    );
+    min(25vw, 12rem);
 
-  max-height: 90vh;
-
-  overflow-y: auto;
-
-  padding:
-    clamp(
-      28px,
-      6vw,
-      60px
-    );
-
-  border:
-    1px solid
-    rgba(255,255,255,.16);
-
-  border-radius: 30px;
-
-  text-align: center;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(27,7,44,.95),
-      rgba(3,14,30,.95)
-    );
-
-  box-shadow:
-    0 0 110px
-    rgba(255,0,210,.2);
-}
-
-
-.big-emoji {
-
-  font-size:
-    clamp(
-      2rem,
-      8vw,
-      4rem
-    );
-}
-
-
-.panel h2 {
-
-  font-size:
-    clamp(
-      2.1rem,
-      7vw,
-      5rem
-    );
-
-  line-height: .95;
+  height:
+    .08rem;
 
   margin:
-    18px
-    0;
+    3vh auto;
 
   background:
     linear-gradient(
       90deg,
-      #fff,
-      #ff73df,
-      #71f4ff
+      transparent,
+      var(--pink),
+      var(--cyan),
+      transparent
     );
 
-  color: transparent;
+  box-shadow:
+    0 0 2vw
+    rgba(255,80,220,.7);
+}
 
-  background-clip: text;
 
-  -webkit-background-clip: text;
+/* =========================================================
+   INTRO
+   ========================================================= */
+
+.intro {
+
+  max-width:
+    45rem;
+
+  margin:
+    0 auto 4vh;
+
+  color:
+    var(--soft-white);
+
+  font-size:
+    clamp(
+      .9rem,
+      2vw,
+      1.25rem
+    );
+
+  line-height:
+    1.6;
 }
 
 
@@ -793,214 +887,554 @@ button:active {
 
 .poem {
 
-  font-family: Georgia, serif;
+  max-width:
+    48rem;
+
+  margin:
+    0 auto;
+
+  padding:
+    4vh 5vw;
+
+  border:
+    .06rem solid
+    rgba(255,255,255,.12);
+
+  border-radius:
+    1.5rem;
+
+  background:
+    rgba(255,255,255,.035);
+
+  backdrop-filter:
+    blur(1rem);
+
+  -webkit-backdrop-filter:
+    blur(1rem);
+
+  box-shadow:
+    0 2vh 8vh
+    rgba(0,0,0,.25);
+}
+
+
+.poem p {
+
+  margin:
+    0 0 2vh;
+
+  color:
+    rgba(255,255,255,.72);
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(
+      .9rem,
+      2vw,
+      1.2rem
+    );
+
+  line-height:
+    1.7;
+}
+
+
+.poem p:last-child {
+
+  margin-bottom:
+    0;
+}
+
+
+.poem-final {
+
+  color:
+    white !important;
 
   font-size:
     clamp(
       1rem,
-      3vw,
-      1.3rem
-    );
+      2.2vw,
+      1.35rem
+    ) !important;
 
-  line-height: 2;
-
-  color: #e9deef;
-
-  min-height: 220px;
-
-  white-space: pre-line;
-}
-
-
-.cursor {
-
-  display: inline-block;
-
-  width: 2px;
-
-  height: 1.1em;
-
-  background: white;
-
-  vertical-align: -.15em;
-
-  animation:
-    blink .8s infinite;
-}
-
-
-@keyframes blink {
-
-  50% {
-    opacity: 0;
-  }
+  margin-top:
+    3vh !important;
 }
 
 
 /* =========================================================
-   CÁMARA
+   FIRMA
    ========================================================= */
 
-.camera-panel {
+.signature {
 
-  max-width: 700px;
-}
+  margin-top:
+    3vh;
 
+  color:
+    rgba(255,255,255,.5);
 
-.camera-panel p {
+  font-family:
+    Georgia,
+    serif;
 
-  color: #cfc2d7;
+  font-style:
+    italic;
 
-  line-height: 1.6;
-}
-
-
-#cameraVideo {
-
-  width:
-    min(
-      560px,
-      100%
+  font-size:
+    clamp(
+      .8rem,
+      1.8vw,
+      1.1rem
     );
+}
 
-  aspect-ratio: 4 / 3;
 
-  object-fit: cover;
+/* =========================================================
+   CONTROLES
+   ========================================================= */
 
-  border-radius: 22px;
+.controls {
 
-  margin:
-    15px
-    auto
-    22px;
+  display:
+    flex;
 
-  background: black;
+  flex-wrap:
+    wrap;
 
-  display: none;
+  justify-content:
+    center;
 
-  transform:
-    scaleX(-1);
+  gap:
+    1rem;
+
+  margin-top:
+    4vh;
+}
+
+
+.control-button {
 
   border:
-    1px solid
-    rgba(255,255,255,.15);
+    .06rem solid
+    var(--border);
+
+  border-radius:
+    999rem;
+
+  padding:
+    1rem 1.4rem;
+
+  background:
+    rgba(255,255,255,.05);
+
+  color:
+    white;
+
+  cursor:
+    pointer;
+
+  font-size:
+    clamp(
+      .75rem,
+      1.7vw,
+      1rem
+    );
+
+  backdrop-filter:
+    blur(.8rem);
+
+  -webkit-backdrop-filter:
+    blur(.8rem);
+
+  transition:
+    transform .2s ease,
+    background .2s ease;
 }
 
 
-#downloadPhoto {
+.control-button:hover {
 
-  display: none;
+  transform:
+    translateY(-.2rem);
 
-  text-decoration: none;
+  background:
+    rgba(255,255,255,.1);
+}
+
+
+.control-button:active {
+
+  transform:
+    scale(.95);
+}
+
+
+.control-button span {
+
+  margin-right:
+    .4rem;
+}
+
+
+.control-button.primary {
+
+  border-color:
+    rgba(255,79,216,.4);
+
+  box-shadow:
+    0 0 2rem
+    rgba(255,79,216,.12);
 }
 
 
 /* =========================================================
-   RESPONSIVE
+   FLASH
    ========================================================= */
 
-@media (max-width: 700px) and (orientation: landscape) {
+.camera-flash {
 
-  #card {
+  position:
+    fixed;
 
-    width: 92vw;
+  inset:
+    0;
 
-    height: 84vh;
+  z-index:
+    100;
+
+  background:
+    white;
+
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+}
+
+
+.camera-flash.flash {
+
+  animation:
+    cameraFlash
+    .7s
+    ease-out;
+}
+
+
+@keyframes cameraFlash {
+
+  0% {
+
+    opacity:
+      0;
   }
 
-  .card-content {
+  15% {
 
-    padding: 15px;
+    opacity:
+      .95;
   }
+
+  100% {
+
+    opacity:
+      0;
+  }
+}
+
+
+/* =========================================================
+   MENSAJE DE GUARDADO
+   ========================================================= */
+
+.save-message {
+
+  position:
+    fixed;
+
+  inset:
+    0;
+
+  z-index:
+    200;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  pointer-events:
+    none;
+
+  opacity:
+    0;
+
+  visibility:
+    hidden;
+
+  transition:
+    opacity .4s ease,
+    visibility .4s ease;
+}
+
+
+.save-message.show {
+
+  opacity:
+    1;
+
+  visibility:
+    visible;
+}
+
+
+.save-card {
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  gap:
+    .6rem;
+
+  padding:
+    2rem 3rem;
+
+  border:
+    .06rem solid
+    rgba(255,255,255,.15);
+
+  border-radius:
+    1.5rem;
+
+  background:
+    rgba(10,5,20,.82);
+
+  backdrop-filter:
+    blur(1rem);
+
+  -webkit-backdrop-filter:
+    blur(1rem);
+
+  box-shadow:
+    0 2rem 6rem
+    rgba(0,0,0,.4);
+
+  animation:
+    saveAppear
+    .5s
+    cubic-bezier(.2,.8,.2,1);
+}
+
+
+@keyframes saveAppear {
+
+  from {
+
+    transform:
+      scale(.7);
+
+    opacity:
+      0;
+  }
+
+  to {
+
+    transform:
+      scale(1);
+
+    opacity:
+      1;
+  }
+}
+
+
+.save-icon {
+
+  width:
+    4rem;
+
+  aspect-ratio:
+    1;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--pink),
+      var(--purple)
+    );
+
+  font-size:
+    1.5rem;
+}
+
+
+.save-card strong {
+
+  font-size:
+    1.1rem;
+}
+
+
+.save-card span {
+
+  color:
+    var(--muted);
+
+  font-size:
+    .8rem;
+}
+
+
+/* =========================================================
+   PANTALLAS HORIZONTALES PEQUEÑAS
+   ========================================================= */
+
+@media
+  (orientation: landscape)
+  and
+  (max-height: 55vh) {
+
+  .birthday-scene {
+
+    padding:
+      4vh 6vw;
+  }
+
 
   .eyebrow {
 
-    margin-bottom: 9px;
+    margin-bottom:
+      1vh;
   }
 
-  #card h2 {
+
+  .birthday-title {
 
     font-size:
       clamp(
-        3.2rem,
-        14vh,
+        2.5rem,
+        12vh,
         6rem
       );
   }
 
-  .subtitle {
+
+  .line {
 
     margin:
-      14px
-      auto;
+      2vh auto;
+  }
+
+
+  .intro {
+
+    margin-bottom:
+      2vh;
 
     font-size:
       clamp(
-        .78rem,
-        2.3vh,
+        .75rem,
+        2.5vh,
         1rem
       );
   }
-}
 
 
-@media (max-width: 520px) {
-
-  #card {
-
-    height: 82vh;
-
-    width: 92vw;
-  }
-
-  .card-content {
+  .poem {
 
     padding:
-      22px
-      16px;
+      2vh 4vw;
   }
 
-  .eyebrow {
 
-    letter-spacing: .22em;
+  .poem p {
 
-    font-size: .62rem;
-  }
-
-  #card h2 {
+    margin-bottom:
+      1vh;
 
     font-size:
       clamp(
-        3.7rem,
-        19vw,
-        6rem
+        .7rem,
+        2.5vh,
+        1rem
       );
+
+    line-height:
+      1.4;
   }
 
-  .subtitle {
 
-    font-size: .95rem;
+  .signature {
 
-    margin:
-      24px
-      auto;
+    margin-top:
+      1vh;
   }
 
-  .buttons {
 
-    gap: 8px;
-  }
+  .controls {
 
-  button {
-
-    padding:
-      12px
-      16px;
-
-    font-size: .86rem;
+    margin-top:
+      2vh;
   }
 }
 
+
+/* =========================================================
+   PANTALLAS MUY PEQUEÑAS
+   ========================================================= */
+
+@media
+  (orientation: landscape)
+  and
+  (max-height: 35vh) {
+
+  .poem {
+
+    padding:
+      1.5vh 3vw;
+  }
+
+
+  .poem p {
+
+    font-size:
+      .72rem;
+  }
+
+
+  .controls {
+
+    margin-top:
+      1.5vh;
+  }
+}
+
+
+/* =========================================================
+   REDUCIR MOVIMIENTO
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -1008,8 +1442,13 @@ button:active {
   *::before,
   *::after {
 
-    animation-duration: .01ms !important;
+    animation-duration:
+      .01ms !important;
 
-    transition-duration: .01ms !important;
+    animation-iteration-count:
+      1 !important;
+
+    scroll-behavior:
+      auto !important;
   }
 }
